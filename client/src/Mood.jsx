@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { useState } from 'react'
 import Axios from "axios"
-export default function Mood({ id, mood, created, rating, onRemove }) {
+export default function Mood({ id, mood, created, rating, onRemove, setMoods }) {
 
     let stars = ""
     for (let i = 0; i < 10; i++) {
@@ -19,16 +19,25 @@ export default function Mood({ id, mood, created, rating, onRemove }) {
 
 
     function handleSubmitEdited(e) {
-        Axios.post("/api/edit/" + id, { mood, rating, newMood, newRating, created})
-        props.setMoods(prevMoods => {
-            return [...prevMoods, { id, created, mood: newMood?newMood:mood, rating: newRating?newRating:rating, }]
-          })
+        Axios.post("/api/edit/" + id, { mood, rating, newMood, newRating, created })
+        setMoods(prevMoods =>
+            prevMoods.map(prevMood => {
+                if (prevMood.id === id) {
+                    return { ...prevMood, mood: newMood || mood, rating: newRating || rating }
+                } else {
+                    return prevMood
+                }
+            })
+        )
+        // setMoods(prevMoods => {
+        //     return [...prevMoods, { id, created, mood: newMood?newMood:mood, rating: newRating?newRating:rating, }]
+        //   })
         setEditing(false)
     }
 
     const [isEditing, setEditing] = useState(false);
     const [newMood, setNewMood] = useState('');
-    const [newRating, setnewRating] = useState();
+    const [newRating, setnewRating] = useState(0);
 
     const editingTemplate = (
         <form>
@@ -40,7 +49,7 @@ export default function Mood({ id, mood, created, rating, onRemove }) {
             <input defaultValue={rating} name="rates" type="text"
                 onChange={(e) => setnewRating(e.target.value)}
             ></input>
-            <button  onClick={handleSubmitEdited}>Submit</button>
+            <button onClick={handleSubmitEdited}>Submit</button>
 
         </form>
     )

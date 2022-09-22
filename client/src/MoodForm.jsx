@@ -8,30 +8,21 @@ export default function MoodForm(props) {
     const [newId, setNewId] = useState("")
 
 
-    const now= new Date().toString()
+    const created = new Date().toString()
 
-    
+
     const submitForm = (e) => {
-        // e.preventDefault()
-
-        // Axios.get("/api/getid")
-        // .then((response) => {
-        //     setNewId(response.data[0].id)
-        //     console.log(newId)
-        // })
-
         Axios.post("/api/create", {
-            mood:mood,
-            rating:rating
+            mood: mood,
+            rating: rating
+        }).then(res => {
+            const id = res.data.id
+            props.setMoods(prevMoods => {
+                return [...prevMoods, { id, created, mood, rating }]
+            })
+
         })
-        props.setMoods(prevMoods => {
-            return [...prevMoods, { id: newId+1, now:now, mood: mood, rating: rating, created: now }]
-          })
-          //self.crypto.randomUUID()
     }
-
-
-
 
     return (
         <form>
