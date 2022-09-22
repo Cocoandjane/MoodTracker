@@ -26,26 +26,11 @@ app.post('/api/create', (req, res) => {
     // console.log(req.body)
     const mood = req.body.mood
     const rating = req.body.rating
-    result = db.query('INSERT INTO moods(mood, rating, created) VALUES(?,?,?);',
-        [mood, rating, created])
-        //result data dont have id of the new row
-     console.log(result)
-    // res.send('values inserted')
-    res.send("values inserted")
+    db.query('INSERT INTO moods(mood, rating, created) VALUES(?,?,?);',
+        [mood, rating, created], (err, result) => {
+            res.json({ id: result.insertId })
+        })
 })
-
-// app.get("/api/getid", (req,res) =>{
-//     db.query("SELECT id FROM moods ORDER BY id DESC LIMIT 1", (err, result) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             // this id is the id of the last row, but not working in the fornt end
-//             res.send(result)
-//             return result
-//         }
-//     })
-
-// })
 
 app.get("/api/moods", (req, res) => {
     db.query("SELECT * FROM moods", (err, result) => {
@@ -65,7 +50,7 @@ app.post("/api/delete/:id", (req, res) => {
 })
 
 app.post("/api/edit/:id", (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     const id = req.params.id
     mood = req.body.mood
     rating = req.body.rating
