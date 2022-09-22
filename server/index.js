@@ -1,6 +1,7 @@
 const express = require("express")
 const mysql = require('mysql2')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
 
@@ -8,7 +9,7 @@ app.use(cors())
 
 app.use(express.json())
 
-const port = 3000
+const port = 8000
 
 const db = mysql.createConnection({
     user: 'root',
@@ -59,3 +60,9 @@ app.post("/api/edit/:id", (req, res) => {
     db.query("UPDATE moods SET mood =?, rating=?, created=? WHERE id = ?;",
         [newMood ? newMood : mood, newRating ? newRating : rating, created, id])
 })
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
+});
